@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Chat App</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Reset CSS */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        /* Variables */
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2980b9;
+            --bg-color: #f8f9fa;
+            --text-color: #2c3e50;
+            --border-color: #e1e8ed;
+            --sidebar-width: 300px;
+            --header-height: 60px;
+        }
+
+        /* Global Styles */
+        body {
+            background: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        /* Chat Container */
+        .chat-container {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: white;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            position: fixed;
+            left: -100%;
+            top: 0;
+            width: 85%;
+            max-width: var(--sidebar-width);
+            height: 100vh;
+            background-color:#2c3e50;
+            color: white;
+            transition: 0.3s ease;
+            z-index: 1000;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar.active {
+            left: 0;
+        }
+
+        .sidebar-header {
+            padding: 1rem;
+            border-bottom: 1px solid #3b536b;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .close-sidebar {
+            cursor: pointer;
+            font-size: 1.5rem;
+            padding: 0.5rem;
+        }
+
+        /* Search Box */
+        .search-box {
+            padding: 1rem;
+            /* border-bottom: 1px solid var(--border-color); */
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #394f66;
+            background: transparent;
+            color: white;
+            border-radius: .5rem;
+            outline: none;
+        }
+
+        /* Chat List */
+        .chat-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+        }
+        .chat-list::-webkit-scrollbar {
+            width: 10px;
+        }
+        .chat-list::-webkit-scrollbar-thumb:hover {
+            background: #405a74; /* Màu của thumb khi hover */
+        }
+        .chat-item-info {
+            display: flex;
+            justify-content: space-between;
+            flex: 1;
+        }
+        .chat-item-info .chat-item-message {
+            opacity: .7;
+            max-height: 46px;
+            overflow-y: hidden;
+        }
+        .chat-item-info .count-noti {
+            background-color: red;
+            width: 25px;
+            border-radius: 50%;
+            height: min-content;
+            display: flex;
+            justify-content: center;
+            transform: scale(.7);
+        }
+
+        .chat-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.8rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: 0.2s;
+            margin-bottom: 0.5rem;
+        }
+
+        .chat-item:hover {
+            background-color: #3a4f64
+        }
+
+        .chat-item.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .chat-item-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--secondary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            position: relative;
+        }
+        .chat-item-avatar .status {
+            display: block;
+            width: 10px;
+            height: 10px;
+            background-color: #0ef00e;
+            border-radius: 50%;
+            position: absolute;
+            left: 72%;
+            top: 74%;
+        }
+  
+
+        /* Main Chat Area */
+        .main-chat {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            margin-left: 0;
+            transition: 0.3s ease;
+        }
+
+        /* Chat Header */
+        .chat-header {
+            height: var(--header-height);
+            padding: 0 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: white;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .menu-toggle {
+            cursor: pointer;
+            font-size: 1.2rem;
+            padding: 0.5rem;
+        }
+
+        .chat-title {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        /* Messages Area */
+        .messages {
+            flex: 1;
+            padding: 1rem;
+            overflow-y: auto;
+            background: #efefef;
+            gap: 10px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .message {
+            max-width: 100%;
+            animation: fadeIn 0.3s ease;
+            position: relative;
+            display: flex;
+            gap: 5px;
+            align-items: end;
+        }
+
+        .message.sent {
+            margin-left: auto;
+            display: flex;
+            justify-content: end;
+        }
+
+        .message-content {
+            padding: 0.4rem .7rem;
+            border-radius: 1rem;
+            position: relative;
+        }
+        .message-content p.name {
+            font-weight: 600;
+            color: cadetblue;
+        }
+        
+
+        .sent .message-content {
+            background: var(--primary-color);
+            color: white;
+            border-bottom-right-radius: 0.3rem;
+            word-break: break-all;
+        }
+
+        .received .message-content {
+            background: white;
+            border-bottom-left-radius: 0.3rem;
+            max-width: 75%;
+        }
+
+        .message-time {
+            font-size: 0.75rem;
+            opacity: 0.7;
+            display: flex;
+            justify-content: end;
+        }
+
+        /* Input Area */
+        .input-area {
+            padding: 1rem;
+            background: white;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .input-container {
+            display: flex;
+            gap: 0.8rem;
+        }
+
+        .message-input {
+            flex: 1;
+            padding: 0.8rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 1.5rem;
+            outline: none;
+            font-size: 1rem;
+            transition: 0.2s;
+            resize: none;
+        }
+
+        .message-input:focus {
+            border-color: var(--primary-color);
+        }
+
+        .send-button {
+            padding: 0.8rem 1.5rem;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 1.5rem;
+            cursor: pointer;
+            transition: 0.2s;
+            font-weight: 600;
+        }
+
+        .send-button:hover {
+            background: var(--secondary-color);
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; top: 20px; }
+            to { opacity: 1; top: 0; }
+        }
+
+        /* Tablet and Desktop Styles */
+        @media (min-width: 768px) {
+            .chat-container {
+                flex-direction: row;
+                max-width: 1200px;
+                height: calc(100vh - 4rem);
+                margin: 2rem auto;
+                border-radius: 1rem;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                overflow: hidden;
+            }
+
+            .sidebar {
+                position: relative;
+                left: 0;
+                width: var(--sidebar-width);
+                box-shadow: none;
+                border-right: 1px solid var(--border-color);
+            }
+
+            .menu-toggle {
+                display: none;
+            }
+
+            .close-sidebar {
+                display: none;
+            }
+
+            .main-chat {
+                margin-left: 0;
+            }
+        }
+
+        /* Desktop Enhancements */
+        @media (min-width: 1024px) {
+            .chat-container {
+                margin: 3rem auto;
+                height: calc(100vh - 6rem);
+            }
+
+       
+
+            .input-area {
+                padding: 1.5rem;
+            }
+        }
+
+        /* Mobile Optimizations */
+        @media (max-width: 767px) {
+            .chat-header {
+                position: sticky;
+                top: 0;
+                z-index: 10;
+            }
+
+            .input-area {
+                position: sticky;
+                bottom: 0;
+                z-index: 10;
+            }
+        }
+        .black-screen {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            background-color: #000000b5;
+            z-index: 11;
+            display: none;
+        }
+        .chat-item-name {
+            font-weight: 600;
+        }
+        .message.sent {
+            max-width: 75%;
+        }
+    </style>
+</head>
+<body>
+    <div class="black-screen"></div>
+    <div class="chat-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="user-profile">
+                    <div class="user-id"></div>
+                    <div class="user-avatar">T</div>
+                    <div class="user-name">ThienAn</div>
+                </div>
+                <div>
+                    <a >
+                    <i style="color: rgb(241, 0, 0);" class="fa-solid fa-right-from-bracket"></i>
+                    </a>
+                </div>
+             
+            </div>
+            <div class="search-box">
+                <input type="text" class="search-input" placeholder="Tìm kiếm...">
+            </div>
+            <div class="chat-list">
+                <div class="chat-item active">
+                    <div class="chat-item-avatar"><i class="fa-solid fa-comments"></i>
+                        <div class="status"></div>
+                    </div>
+                    <div class="chat-item-info">
+                        <div>
+                            <div class="chat-item-name">Cộng đồng</div>
+                            <div class="chat-item-message">Xin chào!</div>
+                        </div>
+                        <div>
+                            <div class="count-noti">1</div>
+                            <div class="message-time">10:30 AM</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="chat-item">
+                    <div class="chat-item-avatar">J
+                        <div class="status"></div>
+                    </div>
+                    <div class="chat-item-info">
+                        <div>
+                            <div class="chat-item-name">John</div>
+                            <div class="chat-item-message">Bạn khỏe không?cjcjhshjcsjhcsjhc hc c hchjcasjhcsahjscajhsc cs hcshj</div>
+                        </div>
+                        <div>
+                            <div class="count-noti">1</div>
+                            <div class="message-time">10:30 AM</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="chat-item">
+                    <div class="chat-item-avatar">J
+                        <div class="status"></div>
+                    </div>
+                    <div class="chat-item-info">
+                        <div>
+                            <div class="chat-item-name">John</div>
+                            <div class="chat-item-message">Bạn khỏe không?cjcjhshjcsjhcsjhc hc c hchjcasjhcsahjscajhsc cs hcshj</div>
+                        </div>
+                        <div>
+                            <div class="count-noti">1</div>
+                            <div class="message-time">10:30 AM</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="chat-item">
+                    <div class="chat-item-avatar">J
+                        <div class="status"></div>
+                    </div>
+                    <div class="chat-item-info">
+                        <div>
+                            <div class="chat-item-name">John</div>
+                            <div class="chat-item-message">Bạn khỏe không?cjcjhshjcsjhcsjhc hc c hchjcasjhcsahjscajhsc cs hcshj</div>
+                        </div>
+                        <div>
+                            <div class="count-noti">1</div>
+                            <div class="message-time">10:30 AM</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="chat-item">
+                    <div class="chat-item-avatar">J
+                        <div class="status"></div>
+                    </div>
+                    <div class="chat-item-info">
+                        <div>
+                            <div class="chat-item-name">John</div>
+                            <div class="chat-item-message">Bạn khỏe không?cjcjhshjcsjhcsjhc hc c hchjcasjhcsahjscajhsc cs hcshj</div>
+                        </div>
+                        <div>
+                            <div class="count-noti">1</div>
+                            <div class="message-time">10:30 AM</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="chat-item">
+                    <div class="chat-item-avatar">J
+                        <div class="status"></div>
+                    </div>
+                    <div class="chat-item-info">
+                        <div>
+                            <div class="chat-item-name">John</div>
+                            <div class="chat-item-message">Bạn khỏe không?cjcjhshjcsjhcsjhc hc c hchjcasjhcsahjscajhsc cs hcshj</div>
+                        </div>
+                        <div>
+                            <div class="count-noti">1</div>
+                            <div class="message-time">10:30 AM</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="chat-item">
+                    <div class="chat-item-avatar">J
+                        <div class="status"></div>
+                    </div>
+                    <div class="chat-item-info">
+                        <div>
+                            <div class="chat-item-name">John</div>
+                            <div class="chat-item-message">Bạn khỏe không?cjcjhshjcsjhcsjhc hc c hchjcasjhcsahjscajhsc cs hcshj</div>
+                        </div>
+                        <div>
+                            <div class="count-noti">1</div>
+                            <div class="message-time">10:30 AM</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="chat-item">
+                    <div class="chat-item-avatar">M
+                        <div class="status"></div>
+                    </div>
+                    <div class="chat-item-info">
+                        <div>
+                            <div class="chat-item-name">Mary</div>
+                            <div class="chat-item-message">Hẹn gặp lại!</div>
+                        </div>
+                        <div>
+                            <div class="count-noti">1</div>
+                            <div class="message-time">10:30 AM</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Chat Area -->
+        <div class="main-chat">
+            <div class="chat-header">
+                <div class="menu-toggle">
+                    <i class="fas fa-bars"></i>
+                </div>
+                <div class="chat-title">
+                    <div class="chat-item-avatar"><i class="fa-solid fa-comments"></i>
+                        <div class="status"></div>
+                    </div>
+                    
+                    <div class="chat-item-name">Cộng Đồng</div>
+                    <p class="numberOnline" style="color:#00c400">(Online: )</p>
+                </div>
+                <div class="chat-actions">
+                    <i class="fas fa-ellipsis-v"></i>
+                </div>
+            </div>
+
+            <div class="messages">
+                <!-- <div class="message received">
+                    <div class="chat-item-avatar">A
+                        <div class="status"></div>
+                    </div>
+                    <div class="message-content">
+                        <p class="name">Trần Anh</p>
+                        <p class="message"> Xin chào! Bạn khỏe không?</p>
+                        <div class="message-time">10:30 AM</div>
+                    </div>
+                </div>
+                <div class="message sent">
+                    <div class="message-content">
+                        Chào Anna! Mình khỏe, còn bạn thì sao?
+                        <div class="message-time">10:31 AM</div>
+                    </div>
+                </div>
+                <div class="message received">
+                    <div class="chat-item-avatar">A
+                        <div class="status"></div>
+                    </div>
+                    <div class="message-content">
+                        <p class="name">Anna</p>
+                        <p class="message">Mình ổn mà</p>
+                        <div class="message-time">10:30 AM</div>
+                    </div>
+                </div> -->
+            </div>
+
+            <div class="input-area">
+                <div class="input-container">
+                    <textarea class="message-input" rows="1" name="" id="" placeholder="Nhập tin nhắn..."></textarea>
+                    <!-- <input type="text" class="message-input" placeholder="Nhập tin nhắn..."> -->
+                     
+                    <button class="send-button"><i class="fa-solid fa-paper-plane"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <p id="PORT_SOCKET" hidden><%- PORT_SOCKET %></p>
+    <script>
+        const _id =  document.querySelector('.sidebar-header .user-id')
+        _id.textContent = Math.floor(Math.random() * 10000000000).toString().padStart(10, '0');
+
+        const WS_sendMessage_public = (text) => {
+            const _id =  document.querySelector('.sidebar-header .user-id').textContent
+            const name =  document.querySelector('.sidebar-header .user-name').textContent
+            const char_avatar =  document.querySelector('.sidebar-header .user-avatar').textContent
+            let data = {
+                type: 'SEND_MESSAGE_PUBLIC',
+                text, 
+                timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                user: {
+                    name: name,
+                    _id: _id,
+                    char_avartar: char_avatar, 
+                }
+            }
+            wss.send(JSON.stringify(data));
+        }
+
+        const createMessage = async (data) => {
+            const ctn = document.querySelector('.main-chat .messages')
+            const _message = `
+            <div class="message received">
+                    <div class="chat-item-avatar">${data.user.char_avartar}
+                        <div class="status"></div>
+                    </div>
+                    <div class="message-content">
+                        <p class="name">${data.user.name}</p>
+                        <p class="message">${data.text}</p>
+                        <div class="message-time">${data.timestamp}</div>
+                    </div>
+                </div>
+            `
+            ctn.insertAdjacentHTML('beforeend', _message)
+        }
+
+        // Toggle Sidebar
+        const blackScreen = document.querySelector('.black-screen')
+
+        document.querySelector('.menu-toggle').addEventListener('click', () => {
+            document.querySelector('.sidebar').classList.add('active');
+            blackScreen.style.display = 'block'
+
+        });
+    
+      
+    
+        blackScreen.addEventListener('click', () => {
+            blackScreen.style.display = 'none';
+            document.querySelector('.sidebar').classList.remove('active');
+        })
+        // Send Message Function
+        const messageInput = document.querySelector('.message-input');
+        const sendButton = document.querySelector('.send-button');
+        const messagesContainer = document.querySelector('.messages');
+    
+        function sendMessage() {
+            const messageText = messageInput.value.trim();
+            if (messageText) {
+                // Gửi tin nhắn
+                WS_sendMessage_public(messageText);
+
+                // Lấy thời gian hiện tại
+                const currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                
+                // Định dạng tin nhắn
+                const formattedMessage = messageText.replace(/\n/g, '<br>');
+                const messageHTML = `
+                    <div class="message sent">
+                        <div class="message-content">
+                            ${formattedMessage}
+                            <div class="message-time">${currentTime}</div>
+                        </div>
+                    </div>
+                `;
+                
+                // Thêm tin nhắn vào container
+                messagesContainer.insertAdjacentHTML('beforeend', messageHTML);
+                
+                // Xóa nội dung ô nhập
+                messageInput.value = '';
+
+                // Cuộn xuống container
+                const lastMessage = messagesContainer.lastElementChild;
+                if (lastMessage) {
+                    // Kiểm tra xem là PC hay mobile
+                    if (window.innerWidth > 768) { // Thay đổi 768 thành độ rộng mà bạn xác định là mobile
+                        messagesContainer.scrollTop = messagesContainer.scrollHeight; // PC
+                    } else {
+                        lastMessage.scrollIntoView({ behavior: 'smooth' }); // Mobile
+                    }
+                }
+            }
+        }
+        sendButton.addEventListener('click', sendMessage);
+        
+        // Xử lý khi nhấn Enter và Ctrl+Enter
+        messageInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                if (e.ctrlKey) {
+                    // Nếu nhấn Ctrl+Enter, chèn ký tự xuống dòng tại vị trí con trỏ
+                    e.preventDefault();
+                    const start = messageInput.selectionStart;
+                    const end = messageInput.selectionEnd;
+                    const text = messageInput.value;
+                    messageInput.value = text.slice(0, start) + '\n' + text.slice(end);
+                    // Di chuyển con trỏ đến vị trí sau ký tự xuống dòng
+                    messageInput.selectionStart = messageInput.selectionEnd = start + 1;
+                } else {
+                    // Nếu chỉ nhấn Enter, gửi tin nhắn
+                    e.preventDefault();
+                    sendMessage();
+                }
+            }
+        });
+        
+        // Chat Item Click Event
+        document.querySelectorAll('.chat-item').forEach(item => {
+            item.addEventListener('click', () => {
+                document.querySelectorAll('.chat-item').forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+                if (window.innerWidth < 768) {
+                    document.querySelector('.sidebar').classList.remove('active');
+                    blackScreen.style.display = 'none'
+
+                }
+            });
+        });
+    </script>
+
+
+
+
+    <script id="WSS">
+        const PORT_SOCKET = document.querySelector('#PORT_SOCKET').textContent
+        // Thay đổi URL theo môi trường
+        const isProduction = window.location.hostname !== 'localhost';
+        const wsProtocol = isProduction ? 'wss' : 'ws'; // Sử dụng wss trong production
+        const wsUrl = `${wsProtocol}://${window.location.hostname}:${PORT_SOCKET}/`; // Thay đổi port nếu cần
+
+        const wss = new WebSocket(wsUrl);
+
+        wss.onopen = () => {
+            // Gửi tin nhắn chỉ khi kết nối đã mở
+            wss.send(JSON.stringify({
+                type: 'JOIN_ROOM',
+                room: 'public',
+                user: {
+                    _id: document.querySelector('.sidebar-header .user-id').textContent,
+                }
+            }));
+        };
+
+        wss.onmessage = async (e) => {
+            const data = JSON.parse(e.data);
+            if (data.type === 'NEW_MESSAGE_PUBLIC') {
+                createMessage(data);
+            }else if (data.type == 'numberOnline') {
+                document.querySelector('.numberOnline').textContent = `(Online: ${data.number})`
+            }
+        };
+
+        wss.onerror = (error) => {
+            console.error('WebSocket error:', error);
+        };
+
+        wss.onclose = () => {
+     
+            // Tái kết nối nếu cần
+            setTimeout(() => {
+                console.log('Reconnecting...');
+                // Khởi động lại WebSocket khi đóng
+                wss = new WebSocket(wsUrl);
+            }, 1000); // Thay đổi thời gian chờ nếu cần
+        };
+    </script>
+
+</body>
+</html>
