@@ -51,8 +51,8 @@ const handleReceivedMessage = async (ws) => {
 
 
 
-const runWebSocketServer = async () => {
-    const wss = new WebSocketServer({port: process.env.PORT_SOCKET});
+const runWebSocketServer = async (server) => {
+    const wss = new WebSocketServer({server});
     
     wss.on('connection', (ws) => {
         handleReceivedMessage(ws)
@@ -69,7 +69,7 @@ const runWebSocketServer = async () => {
         });
     })
     
-    console.log(`WebSocket server is running on port ${process.env.PORT_SOCKET}`);
+    console.log(`WebSocket server is running `);
 }
 
 export default runWebSocketServer

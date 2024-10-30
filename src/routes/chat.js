@@ -6,7 +6,7 @@ dotenv.config()
 const router = express.Router(); 
 
 router.get('/', async (req, res) => {
-    res.render('chat', {PORT_SOCKET: process.env.PORT_SOCKET})
+    res.render('chat', {PORT_SERVER: process.env.PORT_SERVER})
 })
 
 
