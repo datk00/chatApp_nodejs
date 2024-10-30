@@ -742,7 +742,8 @@
         // Thay đổi URL theo môi trường
         const isProduction = window.location.hostname !== 'localhost';
         const wsProtocol = isProduction ? 'wss' : 'ws'; // Sử dụng wss trong production
-        const wsUrl = `${wsProtocol}://${window.location.hostname}:${PORT_SOCKET}/`; // Thay đổi port nếu cần
+        const wsUrl = `${wsProtocol}://${window.location.hostname}/`; // Thay đổi port nếu cần
+        // const wsUrl = `wss://chat365.onrender.com/`; // Thay đổi port nếu cần
 
         const wss = new WebSocket(wsUrl);
 
