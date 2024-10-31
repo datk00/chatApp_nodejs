@@ -5,6 +5,11 @@ import dotenv from 'dotenv'
 dotenv.config();
 const USER_IN_PUBLIC = {}
 
+
+
+const storageMessages = {}
+
+
 const broadcastOnlineCount = () => {
     const onlineCount = Object.keys(USER_IN_PUBLIC).length;
     const message = JSON.stringify({
@@ -16,7 +21,6 @@ const broadcastOnlineCount = () => {
     for (const key in USER_IN_PUBLIC) {
         USER_IN_PUBLIC[key].send(message);
     }
-    console.log(onlineCount)
 };
 
 
@@ -69,7 +73,7 @@ const runWebSocketServer = async (server) => {
         });
     })
     
-    console.log(`WebSocket server is running `);
+    console.log(`WebSocket server is running on port ${process.env.PORT_SOCKET}`);
 }
 
 export default runWebSocketServer

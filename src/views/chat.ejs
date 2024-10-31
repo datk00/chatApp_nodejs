@@ -51,7 +51,7 @@
             height: 100vh;
             background-color:#2c3e50;
             color: white;
-            transition: 0.3s ease;
+            transition: 0.2s linear;
             z-index: 1000;
             box-shadow: 2px 0 5px rgba(0,0,0,0.1);
             display: flex;
@@ -222,7 +222,7 @@
             padding: 1rem;
             overflow-y: auto;
             background: #efefef;
-            gap: 10px;
+            gap: 2px;
             display: flex;
             flex-direction: column;
         }
@@ -405,7 +405,7 @@
         <div class="sidebar">
             <div class="sidebar-header">
                 <div class="user-profile">
-                    <div class="user-id"></div>
+                    <div class="user-id" hidden></div>
                     <div class="user-avatar">T</div>
                     <div class="user-name">ThienAn</div>
                 </div>
@@ -435,111 +435,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="chat-item">
-                    <div class="chat-item-avatar">J
-                        <div class="status"></div>
-                    </div>
-                    <div class="chat-item-info">
-                        <div>
-                            <div class="chat-item-name">John</div>
-                            <div class="chat-item-message">Bạn khỏe không?cjcjhshjcsjhcsjhc hc c hchjcasjhcsahjscajhsc cs hcshj</div>
-                        </div>
-                        <div>
-                            <div class="count-noti">1</div>
-                            <div class="message-time">10:30 AM</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="chat-item">
-                    <div class="chat-item-avatar">J
-                        <div class="status"></div>
-                    </div>
-                    <div class="chat-item-info">
-                        <div>
-                            <div class="chat-item-name">John</div>
-                            <div class="chat-item-message">Bạn khỏe không?cjcjhshjcsjhcsjhc hc c hchjcasjhcsahjscajhsc cs hcshj</div>
-                        </div>
-                        <div>
-                            <div class="count-noti">1</div>
-                            <div class="message-time">10:30 AM</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="chat-item">
-                    <div class="chat-item-avatar">J
-                        <div class="status"></div>
-                    </div>
-                    <div class="chat-item-info">
-                        <div>
-                            <div class="chat-item-name">John</div>
-                            <div class="chat-item-message">Bạn khỏe không?cjcjhshjcsjhcsjhc hc c hchjcasjhcsahjscajhsc cs hcshj</div>
-                        </div>
-                        <div>
-                            <div class="count-noti">1</div>
-                            <div class="message-time">10:30 AM</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="chat-item">
-                    <div class="chat-item-avatar">J
-                        <div class="status"></div>
-                    </div>
-                    <div class="chat-item-info">
-                        <div>
-                            <div class="chat-item-name">John</div>
-                            <div class="chat-item-message">Bạn khỏe không?cjcjhshjcsjhcsjhc hc c hchjcasjhcsahjscajhsc cs hcshj</div>
-                        </div>
-                        <div>
-                            <div class="count-noti">1</div>
-                            <div class="message-time">10:30 AM</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="chat-item">
-                    <div class="chat-item-avatar">J
-                        <div class="status"></div>
-                    </div>
-                    <div class="chat-item-info">
-                        <div>
-                            <div class="chat-item-name">John</div>
-                            <div class="chat-item-message">Bạn khỏe không?cjcjhshjcsjhcsjhc hc c hchjcasjhcsahjscajhsc cs hcshj</div>
-                        </div>
-                        <div>
-                            <div class="count-noti">1</div>
-                            <div class="message-time">10:30 AM</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="chat-item">
-                    <div class="chat-item-avatar">J
-                        <div class="status"></div>
-                    </div>
-                    <div class="chat-item-info">
-                        <div>
-                            <div class="chat-item-name">John</div>
-                            <div class="chat-item-message">Bạn khỏe không?cjcjhshjcsjhcsjhc hc c hchjcasjhcsahjscajhsc cs hcshj</div>
-                        </div>
-                        <div>
-                            <div class="count-noti">1</div>
-                            <div class="message-time">10:30 AM</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="chat-item">
-                    <div class="chat-item-avatar">M
-                        <div class="status"></div>
-                    </div>
-                    <div class="chat-item-info">
-                        <div>
-                            <div class="chat-item-name">Mary</div>
-                            <div class="chat-item-message">Hẹn gặp lại!</div>
-                        </div>
-                        <div>
-                            <div class="count-noti">1</div>
-                            <div class="message-time">10:30 AM</div>
-                        </div>
-                    </div>
-                </div>
+                
             </div>
         </div>
 
@@ -741,9 +637,9 @@
         const PORT_SOCKET = document.querySelector('#PORT_SOCKET').textContent
         // Thay đổi URL theo môi trường
         const isProduction = window.location.hostname !== 'localhost';
-        const wsProtocol = isProduction ? 'wss' : 'ws'; // Sử dụng wss trong production
-        const wsUrl = `${wsProtocol}://${window.location.hostname}/`; // Thay đổi port nếu cần
-        // const wsUrl = `wss://chat365.onrender.com/`; // Thay đổi port nếu cần
+        const wsProtocol = isProduction ? 'wss' : 'ws'; 
+        // const wsUrl = `${wsProtocol}://${window.location.hostname}/`;
+        const wsUrl = `${wsProtocol}://${window.location.hostname}:3000`;
 
         const wss = new WebSocket(wsUrl);
 
